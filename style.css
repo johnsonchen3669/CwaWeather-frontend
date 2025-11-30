@@ -137,18 +137,7 @@ body {
     overflow: hidden;
 }
 
-/* 集中線效果 (Speed Lines) */
-.hero-card::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background: repeating-conic-gradient(
-        from 0deg,
-        transparent 0deg 10deg,
-        rgba(0,0,0,0.03) 10deg 20deg
-    );
-    pointer-events: none;
-}
+/* 移除集中線效果，改為簡潔風格 */
 
 .hero-period {
     position: absolute;
