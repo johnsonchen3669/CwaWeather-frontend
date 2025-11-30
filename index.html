@@ -264,7 +264,7 @@
         <p style="color: white; font-weight: bold; margin-top: 20px;">正在觀測雲的流動...</p>
     </div>
     <div class="status-bar">
-        <div class="location-pill">📍 高雄</div>
+        <div class="location-pill">📍 <span id="locationDisplay">高雄市</span></div>
         <div id="updateTime" class="update-pill">更新中...</div>
     </div>
 
@@ -280,7 +280,130 @@
     </div>
 
     <script>
-        const API_URL = "https://cwa-backend-api.zeabur.app/api/weather/kaohsiung";
+        const locations = {
+            // 北部
+            taipei: "台北市",
+            newtaipei: "新北市",
+            taoyuan: "桃園市",
+            hsinchu: "新竹市",
+            hsinchucounty: "新竹縣",
+            miaoli: "苗栗縣",
+
+            // 中部
+            taichung: "台中市",
+            nantou: "南投縣",
+            changhua: "彰化縣",
+            yunlin: "雲林縣",
+
+            // 南部
+            chiayi: "嘉義市",
+            chiayi_county: "嘉義縣",
+            tainan: "台南市",
+            kaohsiung: "高雄市",
+            pingtung: "屏東縣",
+
+            // 東部
+            yilan: "宜蘭縣",
+            taitung: "台東縣",
+            hualien: "花蓮縣",
+
+            // 離島
+            penghu: "澎湖縣",
+            kinmen: "金門縣",
+            lienchiang: "連江縣",
+        };
+
+        let currentLocation = "kaohsiung"; // 預設位置
+        let currentLocationName = "高雄市"; // 預設位置名稱
+
+        function getLocationFromCoordinates(latitude, longitude) {
+            // 精確的台灣行政區域地理邊界資料
+            console.log(`取得位置: ${latitude}, ${longitude}`);
+
+            // 北部
+            if (latitude >= 24.95 && latitude <= 25.25 && longitude >= 121.45 && longitude <= 121.65) {
+                return "taipei"; // 台北市
+            }
+            if (latitude >= 24.85 && latitude <= 25.20 && longitude >= 121.20 && longitude <= 121.65) {
+                return "newtaipei"; // 新北市
+            }
+            if (latitude >= 24.65 && latitude <= 25.15 && longitude >= 120.90 && longitude <= 121.30) {
+                return "taoyuan"; // 桃園市
+            }
+            if (latitude >= 24.50 && latitude <= 24.85 && longitude >= 120.75 && longitude <= 121.10) {
+                return "hsinchu"; // 新竹市
+            }
+            if (latitude >= 24.45 && latitude <= 24.75 && longitude >= 120.50 && longitude <= 120.90) {
+                return "hsinchucounty"; // 新竹縣
+            }
+            if (latitude >= 24.25 && latitude <= 24.60 && longitude >= 120.45 && longitude <= 120.85) {
+                return "miaoli"; // 苗栗縣
+            }
+
+            // 中部
+            if (latitude >= 23.90 && latitude <= 24.40 && longitude >= 120.40 && longitude <= 120.80) {
+                return "taichung"; // 台中市
+            }
+            if (latitude >= 23.50 && latitude <= 24.00 && longitude >= 120.40 && longitude <= 120.95) {
+                return "nantou"; // 南投縣
+            }
+            if (latitude >= 23.70 && latitude <= 24.10 && longitude >= 120.30 && longitude <= 120.75) {
+                return "changhua"; // 彰化縣
+            }
+            if (latitude >= 23.40 && latitude <= 23.90 && longitude >= 120.00 && longitude <= 120.65) {
+                return "yunlin"; // 雲林縣
+            }
+
+            // 南部
+            if (latitude >= 23.25 && latitude <= 23.55 && longitude >= 120.25 && longitude <= 120.60) {
+                return "chiayi"; // 嘉義市
+            }
+            if (latitude >= 23.05 && latitude <= 23.45 && longitude >= 120.15 && longitude <= 120.60) {
+                return "chiayi_county"; // 嘉義縣
+            }
+            if (latitude >= 22.75 && latitude <= 23.25 && longitude >= 120.00 && longitude <= 120.50) {
+                return "tainan"; // 台南市
+            }
+            if (latitude >= 22.30 && latitude <= 22.90 && longitude >= 120.00 && longitude <= 120.65) {
+                return "kaohsiung"; // 高雄市
+            }
+            if (latitude >= 22.00 && latitude <= 22.50 && longitude >= 120.30 && longitude <= 120.85) {
+                return "pingtung"; // 屏東縣
+            }
+
+            // 東部
+            if (latitude >= 24.50 && latitude <= 24.90 && longitude >= 121.80 && longitude <= 122.10) {
+                return "yilan"; // 宜蘭縣
+            }
+            if (latitude >= 23.80 && latitude <= 24.35 && longitude >= 121.30 && longitude <= 121.85) {
+                return "hualien"; // 花蓮縣
+            }
+            if (latitude >= 22.75 && latitude <= 23.35 && longitude >= 120.95 && longitude <= 121.50) {
+                return "taitung"; // 台東縣
+            }
+
+            // 離島
+            if (latitude >= 23.50 && latitude <= 23.90 && longitude >= 119.40 && longitude <= 119.80) {
+                return "penghu"; // 澎湖縣
+            }
+            if (latitude >= 24.35 && latitude <= 24.55 && longitude >= 118.25 && longitude <= 118.50) {
+                return "kinmen"; // 金門縣
+            }
+            if (latitude >= 26.05 && latitude <= 26.35 && longitude >= 119.85 && longitude <= 120.20) {
+                return "lienchiang"; // 連江縣
+            }
+
+            // 預設高雄
+            return "kaohsiung";
+        }
+
+        function getAPIUrl(location) {
+            return `https://johnson-cwaweather-backend.zeabur.app/api/weather/${location}`;
+        }
+
+        function getLocationDisplayName(locationKey) {
+            return locations[locationKey] || "高雄市";
+        }
 
         function getWeatherIcon(weather) {
             if (!weather) return "🌤️";
@@ -394,24 +517,54 @@
 
         async function fetchWeather() {
             try {
-                // 1. 定義「最低等待時間」：1500 毫秒 (1.5秒)
-                const delayPromise = new Promise(resolve => setTimeout(resolve, 1500));
+                // 1. 取得使用者位置 (啟用高精度)
+                if (navigator.geolocation) {
+                    const options = {
+                        enableHighAccuracy: true, // 啟用高精度定位 (使用 GPS)
+                        timeout: 5000,            // 超時設定 (毫秒)
+                        maximumAge: 0             // 不使用快取位置
+                    };
 
-                // 2. 定義「抓取資料」的工作
-                const fetchPromise = fetch(API_URL).then(res => res.json());
-
-                // 3. Promise.all 會等待「兩個都完成」才會往下走
-                // result 陣列裡，第一個是 delay 的結果(沒用到)，第二個是 api 的 json 資料
-                const [_, json] = await Promise.all([delayPromise, fetchPromise]);
-
-                if (json.success) {
-                    renderWeather(json.data);
-
-                    // 資料處理好後，隱藏 Loading，顯示主畫面
-                    document.getElementById('loading').style.display = 'none';
-                    document.getElementById('mainContent').style.display = 'block';
+                    navigator.geolocation.getCurrentPosition(
+                        (position) => {
+                            const { latitude, longitude } = position.coords;
+                            currentLocation = getLocationFromCoordinates(latitude, longitude);
+                            currentLocationName = getLocationDisplayName(currentLocation);
+                            document.getElementById('locationDisplay').textContent = currentLocationName;
+                            performFetch();
+                        },
+                        (error) => {
+                            console.warn("無法取得位置，使用預設位置高雄", error);
+                            performFetch(); // 使用預設高雄
+                        },
+                        options // 傳入設定選項
+                    );
                 } else {
-                    throw new Error("API Error");
+                    console.warn("瀏覽器不支援地理位置");
+                    performFetch(); // 使用預設高雄
+                }
+
+                async function performFetch() {
+                    const API_URL = getAPIUrl(currentLocation);
+                    
+                    // 定義「最低等待時間」：1500 毫秒 (1.5秒)
+                    const delayPromise = new Promise(resolve => setTimeout(resolve, 1500));
+
+                    // 定義「抓取資料」的工作
+                    const fetchPromise = fetch(API_URL).then(res => res.json());
+
+                    // Promise.all 會等待「兩個都完成」才會往下走
+                    const [_, json] = await Promise.all([delayPromise, fetchPromise]);
+
+                    if (json.success) {
+                        renderWeather(json.data);
+
+                        // 資料處理好後，隱藏 Loading，顯示主畫面
+                        document.getElementById('loading').style.display = 'none';
+                        document.getElementById('mainContent').style.display = 'block';
+                    } else {
+                        throw new Error("API Error");
+                    }
                 }
             } catch (e) {
                 console.error(e);
