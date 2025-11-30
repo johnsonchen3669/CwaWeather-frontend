@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>森森天氣</title>
+    <title>JC 天氣</title>
     <link rel="icon" type="image/png" href="./icon-v2.png">
     <link rel="apple-touch-icon" href="./icon-v2.png">
     <link rel="apple-touch-icon" sizes="180x180" href="./icon-v2.png">
@@ -17,11 +17,16 @@
 
 <body>
     <div id="loading" class="loading-screen">
-        <div style="font-size: 4rem; animation: bounce 2s infinite;">☁️</div>
-        <p style="color: white; font-weight: bold; margin-top: 20px;">正在觀測雲的流動...</p>
+        <div class="loading-spinner"></div>
+        <p style="color: #000; font-weight: 900; margin-top: 20px; letter-spacing: 2px; text-transform: uppercase;">System Loading...</p>
     </div>
     <div class="status-bar">
-        <div class="location-pill">📍 <span id="locationDisplay">高雄市</span></div>
+        <div class="location-pill">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+            <select id="locationSelect" class="manga-select">
+                <option value="kaohsiung">高雄市</option>
+            </select>
+        </div>
         <div id="updateTime" class="update-pill">更新中...</div>
     </div>
 
@@ -30,7 +35,7 @@
         <div id="heroCard">
         </div>
 
-        <h3 class="section-title">稍後預報</h3>
+        <h3 class="section-title">Future Forecast</h3>
         <div class="scroll-container" id="futureForecasts">
         </div>
 
