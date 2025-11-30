@@ -33,6 +33,7 @@ const locations = {
 
 let currentLocation = "kaohsiung"; // 預設位置
 let currentLocationName = "高雄市"; // 預設位置名稱
+let lastSuccessfulData = null; // 儲存上一次成功的資料
 
 function getLocationFromCoordinates(latitude, longitude) {
     // 精確的台灣行政區域地理邊界資料
@@ -315,7 +316,12 @@ async function fetchWeather() {
         }
     } catch (e) {
         console.error(e);
-        alert("天氣資料讀取失敗，請稍後再試。");
+        Swal.fire({
+            icon: 'error',
+            title: '讀取失敗',
+            text: '天氣資料讀取失敗，請稍後再試。',
+            confirmButtonText: '確定'
+        });
     }
 }
 
@@ -340,6 +346,7 @@ async function performFetch(showLoading = true) {
         const [_, json] = await Promise.all([delayPromise, fetchPromise]);
 
         if (json.success) {
+            lastSuccessfulData = json.data; // 儲存成功資料
             renderWeather(json.data);
 
             // 資料處理好後，隱藏 Loading，顯示主畫面
@@ -352,9 +359,31 @@ async function performFetch(showLoading = true) {
         }
     } catch (e) {
         console.error(e);
-        alert("天氣資料讀取失敗，請稍後再試。");
+        
         const loadingEl = document.getElementById('loading');
         if(loadingEl) loadingEl.style.display = 'none';
+
+        if (lastSuccessfulData) {
+            // 如果有舊資料，還原顯示
+            renderWeather(lastSuccessfulData);
+            const mainContent = document.getElementById('mainContent');
+            if(mainContent) mainContent.style.display = 'block';
+
+            Swal.fire({
+                icon: 'warning',
+                title: '更新失敗',
+                text: '無法取得最新天氣，已顯示上一次的資料。',
+                confirmButtonText: '了解'
+            });
+        } else {
+            // 完全沒有資料
+            Swal.fire({
+                icon: 'error',
+                title: '讀取失敗',
+                text: '天氣資料讀取失敗，請稍後再試。',
+                confirmButtonText: '確定'
+            });
+        }
     }
 }
 
