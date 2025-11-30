@@ -331,6 +331,11 @@ async function performFetch(showLoading = true) {
         if(loadingEl) loadingEl.style.display = 'flex';
         const mainContent = document.getElementById('mainContent');
         if(mainContent) mainContent.style.display = 'none';
+        
+        // 讀取中，禁用下拉選單
+        if (window.choicesInstance) {
+            window.choicesInstance.disable();
+        }
     }
 
     const API_URL = getAPIUrl(currentLocation);
@@ -346,7 +351,11 @@ async function performFetch(showLoading = true) {
         const [_, json] = await Promise.all([delayPromise, fetchPromise]);
 
         if (json.success) {
-            lastSuccessfulData = json.data; // 儲存成功資料
+            // 儲存成功資料與對應的地點
+            lastSuccessfulData = {
+                location: currentLocation,
+                data: json.data
+            };
             renderWeather(json.data);
 
             // 資料處理好後，隱藏 Loading，顯示主畫面
@@ -365,7 +374,19 @@ async function performFetch(showLoading = true) {
 
         if (lastSuccessfulData) {
             // 如果有舊資料，還原顯示
-            renderWeather(lastSuccessfulData);
+            
+            // 1. 還原地點變數
+            currentLocation = lastSuccessfulData.location;
+            currentLocationName = locations[currentLocation];
+
+            // 2. 還原下拉選單顯示
+            if (window.choicesInstance) {
+                window.choicesInstance.setChoiceByValue(currentLocation);
+            }
+
+            // 3. 還原天氣畫面
+            renderWeather(lastSuccessfulData.data);
+            
             const mainContent = document.getElementById('mainContent');
             if(mainContent) mainContent.style.display = 'block';
 
@@ -383,6 +404,11 @@ async function performFetch(showLoading = true) {
                 text: '天氣資料讀取失敗，請稍後再試。',
                 confirmButtonText: '確定'
             });
+        }
+    } finally {
+        // 無論成功或失敗，最後都要啟用下拉選單
+        if (window.choicesInstance) {
+            window.choicesInstance.enable();
         }
     }
 }
