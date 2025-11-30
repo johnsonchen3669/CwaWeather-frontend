@@ -1,6 +1,6 @@
 const locations = {
     // 北部
-    taipei: "台北市",
+    taipei: "臺北市",
     newtaipei: "新北市",
     taoyuan: "桃園市",
     hsinchu: "新竹市",
@@ -8,7 +8,7 @@ const locations = {
     miaoli: "苗栗縣",
 
     // 中部
-    taichung: "台中市",
+    taichung: "臺中市",
     nantou: "南投縣",
     changhua: "彰化縣",
     yunlin: "雲林縣",
@@ -16,13 +16,13 @@ const locations = {
     // 南部
     chiayi: "嘉義市",
     chiayi_county: "嘉義縣",
-    tainan: "台南市",
+    tainan: "臺南市",
     kaohsiung: "高雄市",
     pingtung: "屏東縣",
 
     // 東部
     yilan: "宜蘭縣",
-    taitung: "台東縣",
+    taitung: "臺東縣",
     hualien: "花蓮縣",
 
     // 離島
@@ -41,7 +41,7 @@ function getLocationFromCoordinates(latitude, longitude) {
 
     // 北部
     if (latitude >= 24.95 && latitude <= 25.25 && longitude >= 121.45 && longitude <= 121.65) {
-        return "taipei"; // 台北市
+        return "taipei"; // 臺北市
     }
     if (latitude >= 24.85 && latitude <= 25.20 && longitude >= 121.20 && longitude <= 121.65) {
         return "newtaipei"; // 新北市
@@ -61,7 +61,7 @@ function getLocationFromCoordinates(latitude, longitude) {
 
     // 中部
     if (latitude >= 23.90 && latitude <= 24.40 && longitude >= 120.40 && longitude <= 120.80) {
-        return "taichung"; // 台中市
+        return "taichung"; // 臺中市
     }
     if (latitude >= 23.50 && latitude <= 24.00 && longitude >= 120.40 && longitude <= 120.95) {
         return "nantou"; // 南投縣
@@ -81,7 +81,7 @@ function getLocationFromCoordinates(latitude, longitude) {
         return "chiayi_county"; // 嘉義縣
     }
     if (latitude >= 22.75 && latitude <= 23.25 && longitude >= 120.00 && longitude <= 120.50) {
-        return "tainan"; // 台南市
+        return "tainan"; // 臺南市
     }
     if (latitude >= 22.30 && latitude <= 22.90 && longitude >= 120.00 && longitude <= 120.65) {
         return "kaohsiung"; // 高雄市
@@ -98,7 +98,7 @@ function getLocationFromCoordinates(latitude, longitude) {
         return "hualien"; // 花蓮縣
     }
     if (latitude >= 22.75 && latitude <= 23.35 && longitude >= 120.95 && longitude <= 121.50) {
-        return "taitung"; // 台東縣
+        return "taitung"; // 臺東縣
     }
 
     // 離島
