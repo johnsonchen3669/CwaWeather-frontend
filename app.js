@@ -127,6 +127,11 @@ function initLocationSelect() {
     const select = document.getElementById('locationSelect');
     if (!select) return;
     
+    // 如果已經有實例，先銷毀
+    if (window.choicesInstance) {
+        window.choicesInstance.destroy();
+    }
+
     select.innerHTML = '';
     for (const [key, name] of Object.entries(locations)) {
         const option = document.createElement('option');
@@ -135,12 +140,20 @@ function initLocationSelect() {
         select.appendChild(option);
     }
 
+    // 初始化 Choices.js
+    window.choicesInstance = new Choices(select, {
+        searchEnabled: false,
+        itemSelectText: '',
+        shouldSort: false,
+        position: 'bottom',
+    });
+
     // 監聽切換事件
     select.addEventListener('change', (e) => {
         currentLocation = e.target.value;
         currentLocationName = locations[currentLocation];
-        // 重新抓取天氣，不需要再定位
-        performFetch(false); 
+        // 重新抓取天氣，顯示 Loading 效果
+        performFetch(true); 
     });
 }
 
@@ -283,9 +296,10 @@ async function fetchWeather() {
                     currentLocation = getLocationFromCoordinates(latitude, longitude);
                     currentLocationName = getLocationDisplayName(currentLocation);
                     
-                    // 更新下拉選單的值
-                    const select = document.getElementById('locationSelect');
-                    if(select) select.value = currentLocation;
+                    // 更新下拉選單的值 (使用 Choices.js API)
+                    if (window.choicesInstance) {
+                        window.choicesInstance.setChoiceByValue(currentLocation);
+                    }
 
                     performFetch(true);
                 },

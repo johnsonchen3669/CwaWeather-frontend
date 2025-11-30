@@ -325,3 +325,85 @@ body {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
 }
+
+/* === Choices.js 漫畫風格覆寫 === */
+.choices {
+    display: inline-block;
+    margin-bottom: 0;
+    font-size: 1.6rem; /* 放大字體 */
+    min-width: 150px;
+    overflow: visible; /* 允許下拉選單超出 */
+    transform: skew(10deg); /* 修正父層的 skew(-10deg) */
+}
+
+.choices__inner {
+    background-color: transparent;
+    border: none;
+    padding: 0 5px;
+    min-height: auto;
+    font-family: 'Zen Maru Gothic', sans-serif;
+    font-weight: 900;
+    color: var(--text-primary);
+    font-size: 1.6rem; /* 確保內部文字也放大 */
+}
+
+/* 移除 focus 效果 */
+.choices.is-focused .choices__inner,
+.choices__inner:focus {
+    border: none;
+    box-shadow: none;
+    background: transparent;
+}
+
+/* 下拉選單本體 */
+.choices__list--dropdown, 
+.choices__list[aria-expanded] {
+    background-color: #fff;
+    border: 3px solid #000;
+    border-radius: 0;
+    box-shadow: 5px 5px 0 #000;
+    margin-top: 10px;
+    z-index: 1000;
+    width: auto;
+    min-width: 100%;
+}
+
+/* 選項樣式 */
+.choices__list--dropdown .choices__item {
+    font-size: 1.4rem; /* 下拉選單選項也放大 */
+    padding: 10px 15px;
+    color: #000;
+    font-weight: 700;
+}
+
+/* 選項 Hover / Active */
+.choices__list--dropdown .choices__item--selectable.is-highlighted, 
+.choices__list[aria-expanded] .choices__item--selectable.is-highlighted {
+    background-color: #000;
+    color: #fff;
+}
+
+/* 隱藏原本的箭頭，使用我們自己的或者 Choices 的 */
+.choices::after {
+    border-color: #000 transparent transparent transparent;
+    border-width: 8px;
+    right: 10px;
+    margin-top: -4px;
+    height: 0;
+    width: 0;
+}
+
+.choices.is-open::after {
+    border-color: transparent transparent #000 transparent;
+    margin-top: -10px;
+}
+
+/* 調整選中項目的顯示 */
+.choices__list--single {
+    padding: 0;
+    padding-right: 25px; /* 避開箭頭 */
+}
+
+.choices__item {
+    font-family: 'Zen Maru Gothic', sans-serif;
+}
