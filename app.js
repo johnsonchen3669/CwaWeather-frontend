@@ -36,84 +36,67 @@ let currentLocationName = "高雄市"; // 預設位置名稱
 let lastSuccessfulData = null; // 儲存上一次成功的資料
 
 function getLocationFromCoordinates(latitude, longitude) {
-    // 精確的台灣行政區域地理邊界資料
-    console.log(`取得位置: ${latitude}, ${longitude}`);
+    // 使用「最近中心點」方式判斷位置，更精確
 
-    // 北部
-    if (latitude >= 24.95 && latitude <= 25.25 && longitude >= 121.45 && longitude <= 121.65) {
-        return "taipei"; // 臺北市
-    }
-    if (latitude >= 24.85 && latitude <= 25.20 && longitude >= 121.20 && longitude <= 121.65) {
-        return "newtaipei"; // 新北市
-    }
-    if (latitude >= 24.65 && latitude <= 25.15 && longitude >= 120.90 && longitude <= 121.30) {
-        return "taoyuan"; // 桃園市
-    }
-    if (latitude >= 24.50 && latitude <= 24.85 && longitude >= 120.75 && longitude <= 121.10) {
-        return "hsinchu"; // 新竹市
-    }
-    if (latitude >= 24.45 && latitude <= 24.75 && longitude >= 120.50 && longitude <= 120.90) {
-        return "hsinchucounty"; // 新竹縣
-    }
-    if (latitude >= 24.25 && latitude <= 24.60 && longitude >= 120.45 && longitude <= 120.85) {
-        return "miaoli"; // 苗栗縣
-    }
+    // 台灣各縣市中心點座標 (經緯度)
+    const locationCenters = [
+        // 北部
+        { key: "taipei",       lat: 25.0330, lng: 121.5654 }, // 臺北市
+        { key: "newtaipei",    lat: 25.0170, lng: 121.4628 }, // 新北市 (板橋)
+        { key: "taoyuan",      lat: 24.9936, lng: 121.3010 }, // 桃園市
+        { key: "hsinchu",      lat: 24.8015, lng: 120.9718 }, // 新竹市
+        { key: "hsinchucounty",lat: 24.8387, lng: 121.0178 }, // 新竹縣 (竹北)
+        { key: "miaoli",       lat: 24.5602, lng: 120.8214 }, // 苗栗縣
+        { key: "keelung",      lat: 25.1276, lng: 121.7392 }, // 基隆市 (備用)
 
-    // 中部
-    if (latitude >= 23.90 && latitude <= 24.40 && longitude >= 120.40 && longitude <= 120.80) {
-        return "taichung"; // 臺中市
-    }
-    if (latitude >= 23.50 && latitude <= 24.00 && longitude >= 120.40 && longitude <= 120.95) {
-        return "nantou"; // 南投縣
-    }
-    if (latitude >= 23.70 && latitude <= 24.10 && longitude >= 120.30 && longitude <= 120.75) {
-        return "changhua"; // 彰化縣
-    }
-    if (latitude >= 23.40 && latitude <= 23.90 && longitude >= 120.00 && longitude <= 120.65) {
-        return "yunlin"; // 雲林縣
-    }
+        // 中部
+        { key: "taichung",     lat: 24.1477, lng: 120.6736 }, // 臺中市
+        { key: "changhua",     lat: 24.0752, lng: 120.5161 }, // 彰化縣
+        { key: "nantou",       lat: 23.9160, lng: 120.6870 }, // 南投縣
+        { key: "yunlin",       lat: 23.7092, lng: 120.4313 }, // 雲林縣
 
-    // 南部
-    if (latitude >= 23.25 && latitude <= 23.55 && longitude >= 120.25 && longitude <= 120.60) {
-        return "chiayi"; // 嘉義市
-    }
-    if (latitude >= 23.05 && latitude <= 23.45 && longitude >= 120.15 && longitude <= 120.60) {
-        return "chiayi_county"; // 嘉義縣
-    }
-    if (latitude >= 22.75 && latitude <= 23.25 && longitude >= 120.00 && longitude <= 120.50) {
-        return "tainan"; // 臺南市
-    }
-    if (latitude >= 22.30 && latitude <= 22.90 && longitude >= 120.00 && longitude <= 120.65) {
-        return "kaohsiung"; // 高雄市
-    }
-    if (latitude >= 22.00 && latitude <= 22.50 && longitude >= 120.30 && longitude <= 120.85) {
-        return "pingtung"; // 屏東縣
-    }
+        // 南部
+        { key: "chiayi",       lat: 23.4800, lng: 120.4491 }, // 嘉義市
+        { key: "chiayi_county",lat: 23.4518, lng: 120.2555 }, // 嘉義縣 (太保)
+        { key: "tainan",       lat: 22.9998, lng: 120.2270 }, // 臺南市
+        { key: "kaohsiung",    lat: 22.6273, lng: 120.3014 }, // 高雄市
+        { key: "pingtung",     lat: 22.6762, lng: 120.4929 }, // 屏東縣
 
-    // 東部
-    if (latitude >= 24.50 && latitude <= 24.90 && longitude >= 121.80 && longitude <= 122.10) {
-        return "yilan"; // 宜蘭縣
-    }
-    if (latitude >= 23.80 && latitude <= 24.35 && longitude >= 121.30 && longitude <= 121.85) {
-        return "hualien"; // 花蓮縣
-    }
-    if (latitude >= 22.75 && latitude <= 23.35 && longitude >= 120.95 && longitude <= 121.50) {
-        return "taitung"; // 臺東縣
+        // 東部
+        { key: "yilan",        lat: 24.7570, lng: 121.7533 }, // 宜蘭縣
+        { key: "hualien",      lat: 23.9871, lng: 121.6011 }, // 花蓮縣
+        { key: "taitung",      lat: 22.7583, lng: 121.1444 }, // 臺東縣
+
+        // 離島
+        { key: "penghu",       lat: 23.5711, lng: 119.5793 }, // 澎湖縣
+        { key: "kinmen",       lat: 24.4493, lng: 118.3767 }, // 金門縣
+        { key: "lienchiang",   lat: 26.1505, lng: 119.9499 }, // 連江縣 (馬祖)
+    ];
+
+    // 計算使用者座標與每個中心點的距離，找出最近的
+    let closestLocation = "kaohsiung"; // 預設
+    let minDistance = Infinity;
+
+    for (const loc of locationCenters) {
+        // 簡易歐幾里得距離 (對於短距離足夠準確)
+        const dLat = latitude - loc.lat;
+        const dLng = longitude - loc.lng;
+        const distance = Math.sqrt(dLat * dLat + dLng * dLng);
+
+        if (distance < minDistance) {
+            minDistance = distance;
+            closestLocation = loc.key;
+        }
     }
 
-    // 離島
-    if (latitude >= 23.50 && latitude <= 23.90 && longitude >= 119.40 && longitude <= 119.80) {
-        return "penghu"; // 澎湖縣
-    }
-    if (latitude >= 24.35 && latitude <= 24.55 && longitude >= 118.25 && longitude <= 118.50) {
-        return "kinmen"; // 金門縣
-    }
-    if (latitude >= 26.05 && latitude <= 26.35 && longitude >= 119.85 && longitude <= 120.20) {
-        return "lienchiang"; // 連江縣
+    console.log(`判定位置: ${closestLocation}, 距離中心點: ${minDistance.toFixed(4)}`);
+
+    // 如果判定為基隆，因為 API 可能沒有基隆資料，改用新北
+    if (closestLocation === "keelung") {
+        return "newtaipei";
     }
 
-    // 預設高雄
-    return "kaohsiung";
+    return closestLocation;
 }
 
 function getAPIUrl(location) {
